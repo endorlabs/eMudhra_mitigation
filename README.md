@@ -233,39 +233,6 @@ Option B uses this table. Rows without a * were read from the distribution's pac
 
 When a vendor ships a new fix, update `OS_FIXED` in `endor/emudhra_images.py`.
 
-## What was tested
-
-On 2026-10-21, the report was made for six real images on arm64 Docker, and its commands were run
-exactly as printed.
-
-| Image | Impacted trust stores | Option A | Option B | Option C |
-|---|---|---|---|---|
-| Debian 12 with `ca-certificates 20230311+deb12u1` | OS | Pass | Pass | Pass (curl) |
-| `python:3.12-slim` (Debian 13), certifi 2026.7.22, pip 25.0.1 | OS, certifi, pip | Pass | Pass | Pass (`requests`, `urllib`) |
-| Alpine 3.24 with `ca-certificates-bundle 20260909-r0` | OS | Pass | Pass | Pass (curl) |
-| `node:20-slim` (Node.js 20.20.2) | Node.js | Pass (live test) | Not built (new `FROM` image) | Pass |
-| `eclipse-temurin:21-jdk` (Ubuntu 26.04) | OS, Java | Pass (curl, Java) | No JDK vendor fix, as the report states | Pass (curl, Java) |
-| `redhat/ubi9` (RHEL 9.8) | OS | Pass | No vendor fix, as the report states | Pass (curl) |
-
-"Pass" for a rebuild means that `endor/emudhra_trust_check.sh` printed `PASS`, and the live test
-refused the test servers. For option C it means the container refused the test servers. Every
-passing container still reached a normal HTTPS site. The unpatched images all failed the same
-checks.
-
-For the vendor fix table, each release's package repository was queried on 2026-10-21. The Fedora
-43 and Fedora 44 upgrades were also built and checked: Fedora 44 printed `PASS`, Fedora 43 did not.
-
-The generated Kubernetes commands and YAML for option C were run on a local Kubernetes cluster
-(kind) for Debian, UBI 9, Temurin 21, and Node.js 20. The ConfigMap commands were run twice, to
-confirm that they are safe to repeat.
-
-Not tested:
-
-- Wolfi and distroless images, and Go programs, for all options. Fedora for options A and C.
-- Rust programs, and uv (`UV_NATIVE_TLS=1` in option A).
-
-The report does not offer option C for SUSE images or for images with Rust programs.
-
 ## Files
 
 | File | Purpose |
